@@ -1,0 +1,31 @@
+{
+  "name": "stochasticmath",
+  "version": "0.0.1",
+  "description": "A library to do stochastic matrix operations.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JesseCastro/stochasticmath.git"
+  },
+  "keywords": [
+    "matrix",
+    "matrixmath",
+    "stochastic",
+    "markov"
+  ],
+  "author": "Jesse R. Castro <jesse.r.castro@gmail.com>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/JesseCastro/stochasticmath/issues"
+  },
+  "homepage": "https://github.com/JesseCastro/stochasticmath#readme",
+  "devDependencies": {
+    "mocha": "^5.2.0"
+  },
+  "dependencies": {
+    "matrixmath": "^2.2.2"
+  }
+}
