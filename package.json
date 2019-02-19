@@ -26,6 +26,7 @@
     "mocha": "^5.2.0"
   },
   "dependencies": {
-    "matrixmath": "^2.2.2"
+    "matrixmath": "^2.2.2",
+    "sylvester-es6": "0.0.2"
   }
 }
