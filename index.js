@@ -1,4 +1,5 @@
 const Matrix = require('matrixmath/Matrix')
+const Syl = require('sylvester-es6')
 
 Matrix.prototype.isStochastic = function(){
   if(
@@ -206,6 +207,37 @@ Matrix.prototype.N = function(){
   }
 }
 
+Matrix.prototype.NFast = function(){
+  if(!this.isStochastic()){
+    return -1;
+  }
+  else{
+    var Q = this.Q();
+    var It = new Matrix(Q.rows, Q.cols, false).setIdentityData();
+    var parent = Matrix.subtract(It,Q);
+    var inverse = parent.fastInvert();
+    return inverse
+  }
+}
+
+Matrix.prototype.MFast = function(){
+  if(!this.isStochastic()){
+    return -1
+  }
+  else{
+    var cardinality = this.length;
+    var rows = this.length / 2;
+    var N = this.NFast();
+    var R = this.R();
+    if(N == -1){
+      return N
+    }
+    else{
+      return Matrix.fastMultiply(N,R);
+    }
+  }
+}
+
 Matrix.prototype.M = function(){
   if(!this.isStochastic()){
     return -1
@@ -226,14 +258,79 @@ Matrix.prototype.probability = function(i,j){
   else{
     var cardinality = this.length;
     var rows = this.rows;
-    var M = this.M();
-    return M.fetch(i,j)
+    var M = this.MFast();
+    if(M == -1){
+      return M
+    }
+    else{
+      return M.fetch(i,j)
+    }
   }
 }
 
 Matrix.prototype.fetch = function(row,col){
   var index = row * this.cols + col;
   return this[index];
+}
+
+Matrix.prototype.fastInvert = function(){
+
+  var newMatrix = this.toSyl();
+
+  var inverse = newMatrix.inverse();
+
+  if(inverse === null){
+    return -1
+  }
+  else{
+    return Matrix.fromSyl(inverse,this.rows,this.cols)
+  }
+
+}
+
+Matrix.fastMultiply = function(A,B){
+  var AMatrix = A.toSyl();
+  var BMatrix = B.toSyl();
+
+  var product = AMatrix.multiply(BMatrix);
+
+  if(product === null){
+    return -1
+  }
+  else{
+    var rows = product.elements.length;
+    var cols = product.elements[0].length;
+    return Matrix.fromSyl(product,rows, cols)
+  }
+}
+
+Matrix.prototype.toSyl = function(){
+  var arr = this.toArray();
+  var index = 0;
+  var sylData = [];
+  for(var i = 0; i < this.rows; i++){
+    sylData[i] = [];
+    for(var j = 0; j < this.cols; j++){
+      sylData[i][j] = arr[index];
+      index++;
+    }
+  }
+
+
+  var newMatrix = new Syl.Matrix(sylData)
+  return newMatrix
+}
+
+Matrix.fromSyl = function(sylMat,rows,cols){
+  var raw = []
+  for(var i = 0; i < sylMat.elements.length; i++){
+    var row = sylMat.elements[i];
+    for(var j = 0; j < row.length; j++){
+      raw.push(row[j])
+    }
+  }
+  var returnMe = new Matrix(rows,cols).setData(raw)
+  return returnMe
 }
 
 module.exports = Matrix;
